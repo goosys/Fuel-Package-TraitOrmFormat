@@ -1,0 +1,11 @@
+{
+  "name":"trait-orm-format",
+  "type":"fuel-package",
+  "version":"dev-master",
+  "description": "trait output format system for FurlPHP ORM",
+  "require": {
+    "php": ">=5.4",
+    "composer/installers": "*"
+  }
+}
+
