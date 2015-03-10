@@ -53,11 +53,15 @@ trait Trait_Orm_Format {
 	public function format($value,$format='')
 	{
 		$result = $value;
+		if( $value === null ){
+			return '';
+		}
+		
 		if( !empty($format) && !is_callable($format) ){
 			$format = static::_get_format('',array('format'=>$format));
 		}
 		
-		if( !is_null($value) && is_callable($format) )
+		if( $value != null && is_callable($format) )
 		{
 			$result = $format($value);
 		}
@@ -77,24 +81,24 @@ trait Trait_Orm_Format {
 		}
 		else if( __('trait-orm-format.model.'.$model) ){
 			$lng = __('trait-orm-format.model.'.$model);
-			$format = \Arr::get($lng, $property,'%s');
+			$format = isset($lng[$property])? $lng[$property]: false;
 		}
 		
 		if( substr($format, 0, 7) == 'common.')
 		{
 			$lng = __('trait-orm-format.common');
-			$format = \Arr::get( $lng, substr($format,7), false);
+			$format = isset($lng[ substr($format,7) ])? $lng[ substr($format,7) ]: false;
 		}
 		
 		if( !is_callable($format) && substr($format, 0, 9) == 'selector.')
 		{
 			if( __($format) ){
 				$selector = __($format);
-				$format = function($val) use($selector) { return \Arr::get($selector,$val); };
+				$format = function($val) use($selector) { return $selector[$val]; };
 			}
 		}
 		
-		if( !is_null($format) && !is_callable($format) ){
+		if( $format != null && !is_callable($format) ){
 			$format2= $format;
 			$format = function($val) use($format2) { return sprintf($format2,$val); };
 		}
