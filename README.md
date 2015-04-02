@@ -1,6 +1,6 @@
 # Trait-Orm-Format
 
-* Version: 1.0
+* Version: 2.0
 
 ## Information
 
@@ -64,6 +64,12 @@ FuelPHPのORMに書式化出力を提供します。
 			'birthday' => 'common.timetodate',
 			'gender' => 'selector.gender',
 		),
+		
+		//Model_Car
+		'model.car' => array(
+			'owner_id' => '%d',
+			'owner_name' => 'related.owner.name', //「Model_Car belongs_to Model_Person(owner)」と定義されている状態
+		),
 
 * vi fuel/app/lang/ja/selector.php
 
@@ -84,6 +90,8 @@ FuelPHPのORMに書式化出力を提供します。
 		echo $person->formatted_birthday; //"1980/09/10"
 		echo $person->formatted_name; //"taro"
 		echo $person->formatted_gender; //"男性"
+		
+		echo $car->formatted_owner_name; //"taro"
 
 ## Usage
 
@@ -102,6 +110,18 @@ FuelPHPのORMに書式化出力を提供します。
 		"selector.gender" //"女性"
 		"selector.country" //"日本"
 
+### Relation Format
+
+* 関連モデルから出力
+
+		"related.owner.name" //"taro"
+
+### Relation Format
+
+* 関連モデルから出力
+
+		"related.owner.name" //"taro"
+
 ### Functional Format
 
 * Closureの結果を出力
@@ -112,6 +132,14 @@ FuelPHPのORMに書式化出力を提供します。
 ### Undefined Format
 
 * 未定義なら元のプロパティ値を出力
+
+### Method defineded Format
+
+* formatted_で始まる同名のメソッドがあれば実行
+* 例）複数のプロパティ同士を連結するメソッド $parson->formatted_full_name() を定義する。
+
+		"formatted_full_name" //"yamada taro"
+
 
 ## Customize
 

@@ -24,6 +24,12 @@ trait Trait_Orm_Format {
 	 */
 	public function & __get($property)
 	{
+		if (substr($property, 0, 10) == 'formatted_' && method_exists($this,$property) )
+		{
+			$result = $this->$property();
+			return $result;
+		}
+		
 		if (substr($property, 0, 10) == 'formatted_')
 		{
 			$result = $this->_format(substr($property, 10));
@@ -40,6 +46,17 @@ trait Trait_Orm_Format {
 		$result = '';
 		if( empty($format) ){
 			$format = $this->_get_format($property,$this->property($property));
+		}
+		
+		if( is_array($format) ){
+			list($command,$parent,$pprop) = $format;
+			if( $command == 'related' ){
+				if( isset($this->$parent) && $this->$parent ){
+					$prop = 'formatted_'.$pprop;
+					return $this->$parent->$pprop;
+				}
+			}
+			return '';
 		}
 		
 		return static::format($this->get($property),$format);
@@ -94,11 +111,16 @@ trait Trait_Orm_Format {
 		{
 			if( __($format) ){
 				$selector = __($format);
-				$format = function($val) use($selector) { return $selector[$val]; };
+				$format = function($val) use($selector) { return \Arr::get($selector,$val); };
 			}
 		}
 		
-		if( $format != null && !is_callable($format) ){
+		if( !is_callable($format) && substr($format, 0, 8) == 'related.')
+		{
+			$format = explode('.',$format,3);
+		}
+		
+		if( $format != null && !is_callable($format) && !is_array($format) ){
 			$format2= $format;
 			$format = function($val) use($format2) { return sprintf($format2,$val); };
 		}
